@@ -20,11 +20,17 @@ To download the latest stable release, please visit the [Releases](https://githu
 
 ## Features
 1. Debloat Windows 11/10 - Removes unnecessary apps and services from Windows 10/11 to optimize system performance.
-2. KMS Activation - Activates Microsoft products using KMS (Key Management Service).
-3. SMB Bruteforce Attack - Tests a list of potential passwords to gain access to SMB shares on a network.
-4. WinRAR Password Cracker - Attempts to crack the password of a protected WinRAR archive using a dictionary attack.
-5. MAS Script - Runs the Microsoft Activation Script to manage activation.
-6. Chris Titus PowerShell Utilities - Launches Chris Titus Tech PowerShell utilities for Windows optimization and customization.
+
+3. KMS Activation - Activates Microsoft products using KMS (Key Management Service).
+
+5. SMB Bruteforce Attack - Tests a list of potential passwords to gain access to SMB shares on a network.
+ 
+7. WinRAR Password Cracker - Attempts to crack the password of a protected WinRAR archive using a dictionary attack.
+
+9. MAS Script - Runs the Microsoft Activation Script to manage activation.
+
+11. Chris Titus PowerShell Utilities - Launches Chris Titus Tech PowerShell utilities for Windows optimization and customization.
+
 
 
 > [!Note]  
