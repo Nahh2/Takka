@@ -1,7 +1,7 @@
 <div align="center">
   <img src="file:///C:/Users/Nahh/Downloads/DALL·E%202024-10-30%2012.40.48%20-%20A%20high-resolution%20image%20with%20the%20text%20'Takka'%20in%20a%20simple,%20normal%20font%20style%20and%20a%20white%20color.%20The%20background%20is%20a%20clean,%20minimalistic%20black%20and%20whit.webp" height="250" />
 
-![Build](https://github.com/rhunk/SnapEnhance/actions/workflows/android.yml?query=branch%3Amain+event%3Apush+is%3Acompleted) [![Total](https://shields.io/github/downloads/rhunk/SnapEnhance/total?logo=Bookmeter&label=Downloads&logoColor=Green&color=Green)](https://github.com/rhunk/snapenhance/releases) [![Translation status](https://hosted.weblate.org/widget/snapenhance/app/svg-badge.svg)](https://hosted.weblate.org/engage/snapenhance/)
+[![Total](https://shields.io/github/downloads/rhunk/SnapEnhance/total?logo=Bookmeter&label=Downloads&logoColor=Green&color=Green)]([https://github.com/rhunk/snapenhance/releases](https://github.com/Nahh2/Takka/releases)) 
 
 # Takka
 This project provides a command-line batch script `Run.bat` that offers a range of Windows system utilities, including Windows debloating, KMS activation, and additional PowerShell utilities. The menu-driven interface is designed to help users perform these tasks from a single, centralized script..<br/><br/>
