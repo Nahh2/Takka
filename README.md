@@ -21,12 +21,10 @@ To download the latest stable release, please visit the [Releases](https://githu
 You can also download the latest debug build from the [Actions](https://github.com/rhunk/SnapEnhance/actions) section.<br/>
 We no longer offer official `LSPatch` binaries for obvious reasons. However, you're welcome to patch them yourself, as they should theoretically work without any issues.
 
-> [!TIP]  
+> [!Note]  
 > Snapchat has locked many user accounts that used SnapEnhance or its related forks due to new detections. It's recommended to use Snapchat [v12.81.0.44](https://www.apkmirror.com/apk/snap-inc/snapchat/snapchat-12-81-0-44-release/) or earlier. Only use signed builds or builds you've modified yourself to avoid compromising the security of your account.
 
-## Main Features
-<details closed>
-  <summary>Media Downloader</summary>
+##Media Downloader
    
 1. Debloat Windows 11/10 - Removes unnecessary apps and services from Windows 10/11 to optimize system performance.
 2. KMS Activation - Activates Microsoft products using KMS (Key Management Service).
