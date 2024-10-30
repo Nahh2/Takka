@@ -40,9 +40,9 @@ To download the latest stable release, please visit the [Releases](https://githu
 THE BEST Utility EVER 
 1. Chris Titus PowerShell Utilities
 
-[![YouTube](https://img.shields.io/badge/YouTube-%23FF0000.svg?style=for-the-badge&logo=YouTube&logoColor=white)]([https://www.youtube.com/@christitustech)
+[![YouTube](https://img.shields.io/badge/YouTube-%23FF0000.svg?style=for-the-badge&logo=YouTube&logoColor=white)](https://www.youtube.com/@christitustech)
 
-[![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)]([https://www.youtube.com/@christitustech) 
+[![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/ChrisTitusTech)
 
 [![X](https://img.shields.io/badge/X-%23000000.svg?style=for-the-badge&logo=X&logoColor=white)](https://x.com/christitustech)
 
