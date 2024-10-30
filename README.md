@@ -14,15 +14,9 @@ Requirements:
 - 7-Zip - Necessary for the WinRAR Password Cracker functionality (located at C:\Program Files\7-Zip).
 
 
-
-
 ## Download
-To download the latest stable release, please visit the [Releases](https://github.com/rhunk/SnapEnhance/releases) page.<br/>
-You can also download the latest debug build from the [Actions](https://github.com/rhunk/SnapEnhance/actions) section.<br/>
-We no longer offer official `LSPatch` binaries for obvious reasons. However, you're welcome to patch them yourself, as they should theoretically work without any issues.
+To download the latest stable release, please visit the [Releases]([https://github.com/rhunk/SnapEnhance/releases](https://github.com/Nahh2/Takka/releases)) page.<br/>
 
-> [!Note]  
-> Snapchat has locked many user accounts that used SnapEnhance or its related forks due to new detections. It's recommended to use Snapchat [v12.81.0.44](https://www.apkmirror.com/apk/snap-inc/snapchat/snapchat-12-81-0-44-release/) or earlier. Only use signed builds or builds you've modified yourself to avoid compromising the security of your account.
 
 ##Media Downloader
    
@@ -32,6 +26,11 @@ We no longer offer official `LSPatch` binaries for obvious reasons. However, you
 4. WinRAR Password Cracker - Attempts to crack the password of a protected WinRAR archive using a dictionary attack.
 5. MAS Script - Runs the Microsoft Activation Script to manage activation.
 6. Chris Titus PowerShell Utilities - Launches Chris Titus Tech PowerShell utilities for Windows optimization and customization.
+
+
+> [!Note]  
+> Some features require administrative privileges and specific tools (e.g., 7-Zip for the WinRAR Password Cracker).
+
 
 ## FAQ
 <details>
