@@ -32,8 +32,7 @@ To download the latest stable release, please visit the [Releases](https://githu
 
 ## The Tools is Used
 THE BEST Utility EVER 
-
-Chris Titus PowerShell Utilities
+1. Chris Titus PowerShell Utilities
 [Youtube](https://github.com/ChrisTitusTech)
 [GitHub]
 
