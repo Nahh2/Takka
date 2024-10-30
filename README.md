@@ -1,162 +1,39 @@
 <div align="center">
-  <img src="https://raw.githubusercontent.com/rhunk/SnapEnhance/main/app/src/main/res/mipmap-xxxhdpi/launcher_icon_foreground.png" height="250" />
+  <img src="file:///C:/Users/Nahh/Downloads/DALL·E%202024-10-30%2012.40.48%20-%20A%20high-resolution%20image%20with%20the%20text%20'Takka'%20in%20a%20simple,%20normal%20font%20style%20and%20a%20white%20color.%20The%20background%20is%20a%20clean,%20minimalistic%20black%20and%20whit.webp" height="250" />
 
-[![Build](https://img.shields.io/github/actions/workflow/status/rhunk/SnapEnhance/debug.yml?branch=dev&logo=github&label=Build)](https://github.com/rhunk/SnapEnhance/actions/workflows/android.yml?query=branch%3Amain+event%3Apush+is%3Acompleted) [![Total](https://shields.io/github/downloads/rhunk/SnapEnhance/total?logo=Bookmeter&label=Downloads&logoColor=Green&color=Green)](https://github.com/rhunk/snapenhance/releases) [![Translation status](https://hosted.weblate.org/widget/snapenhance/app/svg-badge.svg)](https://hosted.weblate.org/engage/snapenhance/)
+![Build](https://github.com/rhunk/SnapEnhance/actions/workflows/android.yml?query=branch%3Amain+event%3Apush+is%3Acompleted) [![Total](https://shields.io/github/downloads/rhunk/SnapEnhance/total?logo=Bookmeter&label=Downloads&logoColor=Green&color=Green)](https://github.com/rhunk/snapenhance/releases) [![Translation status](https://hosted.weblate.org/widget/snapenhance/app/svg-badge.svg)](https://hosted.weblate.org/engage/snapenhance/)
 
 # Takka
-This project provides a command-line batch script (RUN.bat) that offers a range of Windows system utilities, including Windows debloating, KMS activation, and additional PowerShell utilities. The menu-driven interface is designed to help users perform these tasks from a single, centralized script..<br/><br/>
+This project provides a command-line batch script `Run.bat` that offers a range of Windows system utilities, including Windows debloating, KMS activation, and additional PowerShell utilities. The menu-driven interface is designed to help users perform these tasks from a single, centralized script..<br/><br/>
 </div>
 
 ## Quick Start
 Requirements:
-- Rooted using `Magisk` or `KernelSU`
-- `LSPosed` installed and fully functional
+- Windows OS - Designed for Windows 10/11.
+- PowerShell - Required for running certain commands within the script.
+- 7-Zip - Necessary for the WinRAR Password Cracker functionality (located at C:\Program Files\7-Zip).
 
-Although using this in an unrooted enviroment using something like `LSPatch` should be working fine, it is not recommended to do so, use at your own risk!
 
-1. Install the module APK from either this [Github repo](https://github.com/rhunk/SnapEnhance/releases) or the [LSPosed repo](https://modules.lsposed.org/module/me.rhunk.snapenhance)
-2. Turn on the module in `LSPosed` and make sure Snapchat is in scope
-3. Force Stop Snapchat
-4. Open the menu by clicking the [Settings Gear Icon](https://i.imgur.com/2grm8li.png) or the [Top Title](https://imgur.com/xWFKha7) (v2.1.0 and higher)
 
-A full installation guide can be found [here](https://github.com/rhunk/SnapEnhance/wiki/Installation-Guide).
 
 ## Download
 To download the latest stable release, please visit the [Releases](https://github.com/rhunk/SnapEnhance/releases) page.<br/>
 You can also download the latest debug build from the [Actions](https://github.com/rhunk/SnapEnhance/actions) section.<br/>
 We no longer offer official `LSPatch` binaries for obvious reasons. However, you're welcome to patch them yourself, as they should theoretically work without any issues.
 
-> [!Caution]  
+> [!TIP]  
 > Snapchat has locked many user accounts that used SnapEnhance or its related forks due to new detections. It's recommended to use Snapchat [v12.81.0.44](https://www.apkmirror.com/apk/snap-inc/snapchat/snapchat-12-81-0-44-release/) or earlier. Only use signed builds or builds you've modified yourself to avoid compromising the security of your account.
 
 ## Main Features
 <details closed>
   <summary>Media Downloader</summary>
    
-  - `Auto Download`
-  - `Prevent Self Auto Download`
-  - `Merge Overlays`
-  - `Force Image Format`
-  - `Force Voice Note Format`
-  - `Download Profile Pictures`
-  - `Opera Download Button`
-  - `Chat Download Context Menu`
-  - `Logging`
-  - `Custom Path Format` 
-</details>
-
-<details closed>
-  <summary>User Interface</summary>
-  
-  - `Friend Feed Menu Buttons` 
-  - `AMOLED Dark Mode`
-  - `Friend Feed Message Preview` 
-  - `Snap Preview`
-  - `Bootstrap Override` (Default Home Tab & Persistent App Appearance)
-  - `Enhance Friend Map Nametags`
-  - `Prevent Message List Auto Scroll`
-  - `Show Streak Expiration Info`
-  - `Hide Friend Feed Entry`
-  - `Hide Streak Restore`
-  - `Hide Quick Add In Friend Feed`
-  - `Hide Story Section` 
-  - `Hide UI Components` (Voice Record button, Call Buttons, ...)
-  - `Opera Media Quick Info`
-  - `Old Bitmoji Selfie` 
-  - `Disable Spotlight` 
-  - `Hide Settings Gear`
-  - `Vertical Story Viewer` 
-  - `Message Indicators` 
-  - `Stealth Mode Indicator` 
-  - `Edit Text Override`
-</details>  
-
-<details closed>
-  <summary>Messaging</summary>
-  
-  - `Bypass Screenshot Detection` 
-  - `Anonymous Story Viewing`
-  - `Prevent Story Rewatch Indicator`
-  - `Hide Peek-a-Peek`
-  - `Hide Bitmoji Presence` 
-  - `Hide Typing Notifications` 
-  - `Unlimited Snap View Time`
-  - `Auto Mark As Read` 
-  - `Loop Media PlayBack`
-  - `Disable Replay In FF`
-  - `Half Swipe Notifier`
-  - `Message Preview`
-  - `Call Start Confirmation`
-  - `Auto Save Messages` 
-  - `Prevent Message Sending`
-  - `Friend Mutation Notifier`
-  - `Better Notifications` 
-  - `Notifications Blacklist`
-  - `Message Logger`
-  - `Gallery Media Send Override`
-  - `Strip Media Metadata`
-  - `Bypass Message Retention Policy`
-  - `Bypass Message Action Restrictions`
-  - `Remove Groups Locked Status` 
- </details>
-
-<details closed>
-  <summary>Global</summary>
- 
-  - `Better Location`
-  - `Suspend Location Updates`
-  - `Snapchat Plus` 
-  - `Disable Confirmation Dialogs`
-  - `Disable Metrics`
-  - `Disable Story Sections`
-  - `Block Ads`
-  - `Disable Permission Request`
-  - `Disable Memories Snap Feed`
-  - `Spotlight Comments Username` 
-  - `Bypass Video Length Restriction`
-  - `Default Video Playback Rate`
-  - `Video Playback Rate Slider`
-  - `Disable Google Play Services Dialogs`
-  - `Force Upload Source Quality`
-  - `Default Volume Controls`
-  - `Hide Active Music`
-  - `Disable Snap Splitting`
-</details>
-
-<details closed>
-  <summary>Camera</summary>
-  
-  - `Disable Camera`
-  - `Immersive Preview`
-  - `Black Photos` 
-  - `Custom Frame Rate` (Front & Back)
-  - `HEVC Recording`
-  - `Force Camera Source Encoding`
-  - `Override Resolution` (Front & Back)
-</details> 
-
-<details closed>
-  <summary>Experimental</summary>
-  
-  - `Session Events`
-  - `Device Spoof`
-  - `Convert Message Locally`
-  - `New Chat Action Menu`
-  - `Media File Picker`
-  - `Story Logger`
-  - `Call Recorder`
-  - `Account Switcher`
-  - `Edit Messages` 
-  - `App Passcode`
-  - `Infinite Story Boost`
-  - `My Eyes Only Passcode Bypass`
-  - `No Friend Score Delay`
-  - `End-to-End Encryption`
-  - `Enable Hidden Snapchat Plus Features`
-  - `Custom Streaks Expiration Format`
-  - `Add Friend Source Spoof`
-  - `Prevent Forced Logout`
-</details>
+1. Debloat Windows 11/10 - Removes unnecessary apps and services from Windows 10/11 to optimize system performance.
+2. KMS Activation - Activates Microsoft products using KMS (Key Management Service).
+3. SMB Bruteforce Attack - Tests a list of potential passwords to gain access to SMB shares on a network.
+4. WinRAR Password Cracker - Attempts to crack the password of a protected WinRAR archive using a dictionary attack.
+5. MAS Script - Runs the Microsoft Activation Script to manage activation.
+6. Chris Titus PowerShell Utilities - Launches Chris Titus Tech PowerShell utilities for Windows optimization and customization.
 
 ## FAQ
 <details>
