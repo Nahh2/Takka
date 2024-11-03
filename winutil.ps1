@@ -8,7 +8,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.10.07
+    Version        : 24.10.24
 #>
 
 param (
@@ -40,7 +40,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.10.07"
+$sync.version = "24.10.24"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -1683,7 +1683,6 @@ function Remove-Features() {
             $_.FeatureName -NotLike "*NFS*" -AND
             $_.FeatureName -NotLike "*SearchEngine*" -AND
             $_.FeatureName -NotLike "*RemoteDesktop*" -AND
-            $_.FeatureName -NotLike "*Recall*" -AND
             $_.State -ne "Disabled"
         }
 
@@ -1847,6 +1846,31 @@ function Remove-ProvisionedPackages() {
         # This can happen if getting AppX packages fails
         Write-Host "Unable to get information about the AppX packages. MicroWin processing will continue, but AppX packages will not be processed"
         Write-Host "Error information: $($_.Exception.Message)" -ForegroundColor Yellow
+    }
+}
+
+function Get-LocalizedUsers
+{
+    <#
+        .SYNOPSIS
+            Gets a localized user group representation for ICACLS commands (Port from DISMTools PE Helper)
+        .PARAMETER admins
+            Determines whether to get a localized user group representation for the Administrators user group
+        .OUTPUTS
+            A string containing the localized user group
+        .EXAMPLE
+            Get-LocalizedUsers -admins $true
+    #>
+    param (
+        [Parameter(Mandatory = $true, Position = 0)] [bool]$admins
+    )
+    if ($admins)
+    {
+        return (Get-LocalGroup | Where-Object { $_.SID.Value -like "S-1-5-32-544" }).Name
+    }
+    else
+    {
+        return (Get-LocalGroup | Where-Object { $_.SID.Value -like "S-1-5-32-545" }).Name
     }
 }
 
@@ -5303,6 +5327,35 @@ public class PowerManagement {
         Write-Host "Removing Appx Bloat"
         Remove-ProvisionedPackages
 
+        # Detect Windows 11 24H2 and add dependency to FileExp to prevent Explorer look from going back - thanks @WitherOrNot and @thecatontheceiling
+        if ((Test-CompatibleImage $imgVersion $([System.Version]::new(10,0,26100,1))) -eq $true)
+        {
+            try
+            {
+                if (Test-Path "$scratchDir\Windows\SystemApps\MicrosoftWindows.Client.FileExp_cw5n1h2txyewy\appxmanifest.xml" -PathType Leaf)
+                {
+                    # Found the culprit. Do the following:
+
+                    # 1. Take ownership of the file, from TrustedInstaller to Administrators
+                    takeown /F "$scratchDir\Windows\SystemApps\MicrosoftWindows.Client.FileExp_cw5n1h2txyewy\appxmanifest.xml" /A
+
+                    # 2. Set ACLs so that we can write to it
+                    icacls "$scratchDir\Windows\SystemApps\MicrosoftWindows.Client.FileExp_cw5n1h2txyewy\appxmanifest.xml" /grant "$(Get-LocalizedUsers -admins $true):(M)" | Out-Host
+
+                    # 3. Open the file and do the modification
+                    $appxManifest = Get-Content -Path "$scratchDir\Windows\SystemApps\MicrosoftWindows.Client.FileExp_cw5n1h2txyewy\appxmanifest.xml"
+                    $originalLine = $appxManifest[13]
+                    $dependency = "`n        <PackageDependency Name=`"Microsoft.WindowsAppRuntime.CBS`" MinVersion=`"1.0.0.0`" Publisher=`"CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US`" />"
+                    $appxManifest[13] = "$originalLine$dependency"
+                    Set-Content -Path "$scratchDir\Windows\SystemApps\MicrosoftWindows.Client.FileExp_cw5n1h2txyewy\appxmanifest.xml" -Value $appxManifest -Force -Encoding utf8
+                }
+            }
+            catch
+            {
+
+            }
+        }
+
         Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\LogFiles\WMI\RtBackup" -Directory
         Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\DiagTrack" -Directory
         Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\InboxApps" -Directory
@@ -6939,14 +6992,6 @@ $sync.configs.applications = @'
     "link": "https://carnackeys.com/",
     "winget": "code52.Carnac"
   },
-  "WPFInstallcemu": {
-    "category": "Games",
-    "choco": "cemu",
-    "content": "Cemu",
-    "description": "Cemu is a highly experimental software to emulate Wii U applications on PC.",
-    "link": "https://cemu.info/",
-    "winget": "Cemu.Cemu"
-  },
   "WPFInstallchatterino": {
     "category": "Communications",
     "choco": "chatterino",
@@ -6979,14 +7024,6 @@ $sync.configs.applications = @'
     "link": "https://arc.net/",
     "winget": "TheBrowserCompany.Arc"
   },
-  "WPFInstallclementine": {
-    "category": "Multimedia Tools",
-    "choco": "clementine",
-    "content": "Clementine",
-    "description": "Clementine is a modern music player and library organizer, supporting various audio formats and online radio services.",
-    "link": "https://www.clementine-player.org/",
-    "winget": "Clementine.Clementine"
-  },
   "WPFInstallclink": {
     "category": "Development",
     "choco": "clink",
@@ -6994,14 +7031,6 @@ $sync.configs.applications = @'
     "description": "Clink is a powerful Bash-compatible command-line interface (CLIenhancement for Windows, adding features like syntax highlighting and improved history).",
     "link": "https://mridgers.github.io/clink/",
     "winget": "chrisant996.Clink"
-  },
-  "WPFInstallclonehero": {
-    "category": "Games",
-    "choco": "na",
-    "content": "Clone Hero",
-    "description": "Clone Hero is a free rhythm game, which can be played with any 5 or 6 button guitar controller.",
-    "link": "https://clonehero.net/",
-    "winget": "CloneHeroTeam.CloneHero"
   },
   "WPFInstallcmake": {
     "category": "Development",
@@ -7163,14 +7192,6 @@ $sync.configs.applications = @'
     "link": "https://dotnet.microsoft.com/download/dotnet/8.0",
     "winget": "Microsoft.DotNet.DesktopRuntime.8"
   },
-  "WPFInstalldmt": {
-    "winget": "GNE.DualMonitorTools",
-    "choco": "dual-monitor-tools",
-    "category": "Utilities",
-    "content": "Dual Monitor Tools",
-    "link": "https://dualmonitortool.sourceforge.net/",
-    "description": "Dual Monitor Tools (DMT) is a FOSS app that allows you to customize the handling of multiple monitors. Useful for fullscreen games and apps that handle a second monitor poorly and can improve your workflow."
-  },
   "WPFInstallduplicati": {
     "category": "Utilities",
     "choco": "duplicati",
@@ -7178,14 +7199,6 @@ $sync.configs.applications = @'
     "description": "Duplicati is an open-source backup solution that supports encrypted, compressed, and incremental backups. It is designed to securely store data on cloud storage services.",
     "link": "https://www.duplicati.com/",
     "winget": "Duplicati.Duplicati"
-  },
-  "WPFInstalleaapp": {
-    "category": "Games",
-    "choco": "ea-app",
-    "content": "EA App",
-    "description": "EA App is a platform for accessing and playing Electronic Arts games.",
-    "link": "https://www.ea.com/ea-app",
-    "winget": "ElectronicArts.EADesktop"
   },
   "WPFInstalleartrumpet": {
     "category": "Multimedia Tools",
@@ -7210,22 +7223,6 @@ $sync.configs.applications = @'
     "description": "EFI Boot Editor is a tool for managing the EFI/UEFI boot entries on your system. It allows you to customize the boot configuration of your computer.",
     "link": "https://www.easyuefi.com/",
     "winget": "EFIBootEditor.EFIBootEditor"
-  },
-  "WPFInstallemulationstation": {
-    "category": "Games",
-    "choco": "emulationstation",
-    "content": "Emulation Station",
-    "description": "Emulation Station is a graphical and themeable emulator front-end that allows you to access all your favorite games in one place.",
-    "link": "https://emulationstation.org/",
-    "winget": "Emulationstation.Emulationstation"
-  },
-  "WPFInstallepicgames": {
-    "category": "Games",
-    "choco": "epicgameslauncher",
-    "content": "Epic Games Launcher",
-    "description": "Epic Games Launcher is the client for accessing and playing games from the Epic Games Store.",
-    "link": "https://www.epicgames.com/store/en-US/",
-    "winget": "EpicGames.EpicGamesLauncher"
   },
   "WPFInstallesearch": {
     "category": "Utilities",
@@ -7403,14 +7400,6 @@ $sync.configs.applications = @'
     "link": "https://github.com/junegunn/fzf/",
     "winget": "junegunn.fzf"
   },
-  "WPFInstallgeforcenow": {
-    "category": "Games",
-    "choco": "nvidia-geforce-now",
-    "content": "GeForce NOW",
-    "description": "GeForce NOW is a cloud gaming service that allows you to play high-quality PC games on your device.",
-    "link": "https://www.nvidia.com/en-us/geforce-now/",
-    "winget": "Nvidia.GeForceNow"
-  },
   "WPFInstallgimp": {
     "category": "Multimedia Tools",
     "choco": "gimp",
@@ -7483,14 +7472,6 @@ $sync.configs.applications = @'
     "link": "https://godotengine.org/",
     "winget": "GodotEngine.GodotEngine"
   },
-  "WPFInstallgog": {
-    "category": "Games",
-    "choco": "goggalaxy",
-    "content": "GOG Galaxy",
-    "description": "GOG Galaxy is a gaming client that offers DRM-free games, additional content, and more.",
-    "link": "https://www.gog.com/galaxy",
-    "winget": "GOG.Galaxy"
-  },
   "WPFInstallgitify": {
     "category": "Development",
     "choco": "na",
@@ -7555,14 +7536,6 @@ $sync.configs.applications = @'
     "link": "https://handbrake.fr/",
     "winget": "HandBrake.HandBrake"
   },
-  "WPFInstallharmonoid": {
-    "category": "Multimedia Tools",
-    "choco": "na",
-    "content": "Harmonoid",
-    "description": "Plays and manages your music library. Looks beautiful and juicy. Playlists, visuals, synced lyrics, pitch shift, volume boost and more.",
-    "link": "https://harmonoid.com/",
-    "winget": "Harmonoid.Harmonoid"
-  },
   "WPFInstallheidisql": {
     "category": "Pro Tools",
     "choco": "heidisql",
@@ -7578,14 +7551,6 @@ $sync.configs.applications = @'
     "description": "Helix is a neovim alternative built in rust.",
     "link": "https://helix-editor.com/",
     "winget": "Helix.Helix"
-  },
-  "WPFInstallheroiclauncher": {
-    "category": "Games",
-    "choco": "na",
-    "content": "Heroic Games Launcher",
-    "description": "Heroic Games Launcher is an open-source alternative game launcher for Epic Games Store.",
-    "link": "https://heroicgameslauncher.com/",
-    "winget": "HeroicGamesLauncher.HeroicGamesLauncher"
   },
   "WPFInstallhexchat": {
     "category": "Communications",
@@ -7634,14 +7599,6 @@ $sync.configs.applications = @'
     "description": "Inkscape is a powerful open-source vector graphics editor, suitable for tasks such as illustrations, icons, logos, and more.",
     "link": "https://inkscape.org/",
     "winget": "Inkscape.Inkscape"
-  },
-  "WPFInstallitch": {
-    "category": "Games",
-    "choco": "itch",
-    "content": "Itch.io",
-    "description": "Itch.io is a digital distribution platform for indie games and creative projects.",
-    "link": "https://itch.io/",
-    "winget": "ItchIo.Itch"
   },
   "WPFInstallitunes": {
     "category": "Multimedia Tools",
@@ -7771,14 +7728,6 @@ $sync.configs.applications = @'
     "link": "https://www.codecguide.com/",
     "winget": "CodecGuide.K-LiteCodecPack.Standard"
   },
-  "WPFInstallkodi": {
-    "category": "Multimedia Tools",
-    "choco": "kodi",
-    "content": "Kodi Media Center",
-    "description": "Kodi is an open-source media center application that allows you to play and view most videos, music, podcasts, and other digital media files.",
-    "link": "https://kodi.tv/",
-    "winget": "XBMCFoundation.Kodi"
-  },
   "WPFInstallkrita": {
     "category": "Multimedia Tools",
     "choco": "krita",
@@ -7907,14 +7856,6 @@ $sync.configs.applications = @'
     "link": "https://github.com/emoacht/Monitorian",
     "winget": "emoacht.Monitorian"
   },
-  "WPFInstallmoonlight": {
-    "category": "Games",
-    "choco": "moonlight-qt",
-    "content": "Moonlight/GameStream Client",
-    "description": "Moonlight/GameStream Client allows you to stream PC games to other devices over your local network.",
-    "link": "https://moonlight-stream.org/",
-    "winget": "MoonlightGameStreamingProject.Moonlight"
-  },
   "WPFInstallMotrix": {
     "category": "Utilities",
     "choco": "motrix",
@@ -7955,14 +7896,6 @@ $sync.configs.applications = @'
     "link": "https://www.msi.com/Landing/afterburner",
     "winget": "Guru3D.Afterburner"
   },
-  "WPFInstallBorderlessGaming": {
-    "category": "Utilities",
-    "choco": "borderlessgaming",
-    "content": "Borderless Gaming",
-    "description": "Play your favorite games in a borderless window; no more time consuming alt-tabs.",
-    "link": "https://github.com/Codeusa/Borderless-Gaming",
-    "winget": "Codeusa.BorderlessGaming"
-  },
   "WPFInstallEqualizerAPO": {
     "category": "Multimedia Tools",
     "choco": "equalizerapo",
@@ -7970,14 +7903,6 @@ $sync.configs.applications = @'
     "description": "Equalizer APO is a parametric / graphic equalizer for Windows.",
     "link": "https://sourceforge.net/projects/equalizerapo",
     "winget": "na"
-  },
-  "WPFInstallCompactGUI": {
-    "category": "Utilities",
-    "choco": "compactgui",
-    "content": "Compact GUI",
-    "description": "Transparently compress active games and programs using Windows 10/11 APIs",
-    "link": "https://github.com/IridiumIO/CompactGUI",
-    "winget": "IridiumIO.CompactGUI"
   },
   "WPFInstallExifCleaner": {
     "category": "Utilities",
@@ -7994,14 +7919,6 @@ $sync.configs.applications = @'
     "description": "Mp3tag is a powerful and yet easy-to-use tool to edit metadata of common audio formats.",
     "link": "https://www.mp3tag.de/en/",
     "winget": "Mp3tag.Mp3tag"
-  },
-  "WPFInstalltagscanner": {
-    "category": "Multimedia Tools",
-    "choco": "tagscanner",
-    "content": "TagScanner (Tag Scanner)",
-    "description": "TagScanner is a powerful tool for organizing and managing your music collection",
-    "link": "https://www.xdlab.ru/en/",
-    "winget": "SergeySerkov.TagScanner"
   },
   "WPFInstallnanazip": {
     "category": "Utilities",
@@ -8050,14 +7967,6 @@ $sync.configs.applications = @'
     "description": "Nextcloud Desktop is the official desktop client for the Nextcloud file synchronization and sharing platform.",
     "link": "https://nextcloud.com/install/#install-clients",
     "winget": "Nextcloud.NextcloudDesktop"
-  },
-  "WPFInstallnglide": {
-    "category": "Multimedia Tools",
-    "choco": "na",
-    "content": "nGlide (3dfx compatibility)",
-    "description": "nGlide is a 3Dfx Voodoo Glide wrapper. It allows you to play games that use Glide API on modern graphics cards without the need for a 3Dfx Voodoo graphics card.",
-    "link": "http://www.zeus-software.com/downloads/nglide",
-    "winget": "ZeusSoftware.nGlide"
   },
   "WPFInstallnmap": {
     "category": "Pro Tools",
@@ -8283,14 +8192,6 @@ $sync.configs.applications = @'
     "link": "https://www.raspberrypi.com/software/",
     "winget": "RaspberryPiFoundation.RaspberryPiImager"
   },
-  "WPFInstallplaynite": {
-    "category": "Games",
-    "choco": "playnite",
-    "content": "Playnite",
-    "description": "Playnite is an open-source video game library manager with one simple goal: To provide a unified interface for all of your games.",
-    "link": "https://playnite.link/",
-    "winget": "Playnite.Playnite"
-  },
   "WPFInstallplex": {
     "category": "Multimedia Tools",
     "choco": "plexmediaserver",
@@ -8363,14 +8264,6 @@ $sync.configs.applications = @'
     "link": "https://github.com/microsoft/PowerToys",
     "winget": "Microsoft.PowerToys"
   },
-  "WPFInstallprismlauncher": {
-    "category": "Games",
-    "choco": "prismlauncher",
-    "content": "Prism Launcher",
-    "description": "Prism Launcher is a game launcher and manager designed to provide a clean and intuitive interface for organizing and launching your games.",
-    "link": "https://prismlauncher.org/",
-    "winget": "PrismLauncher.PrismLauncher"
-  },
   "WPFInstallprocesslasso": {
     "category": "Utilities",
     "choco": "plasso",
@@ -8402,14 +8295,6 @@ $sync.configs.applications = @'
     "description": "PrusaSlicer is a powerful and easy-to-use slicing software for 3D printing with Prusa 3D printers.",
     "link": "https://www.prusa3d.com/prusaslicer/",
     "winget": "Prusa3d.PrusaSlicer"
-  },
-  "WPFInstallpsremoteplay": {
-    "category": "Games",
-    "choco": "ps-remote-play",
-    "content": "PS Remote Play",
-    "description": "PS Remote Play is a free application that allows you to stream games from your PlayStation console to a PC or mobile device.",
-    "link": "https://remoteplay.dl.playstation.net/remoteplay/lang/gb/",
-    "winget": "PlayStation.PSRemotePlay"
   },
   "WPFInstallputty": {
     "category": "Pro Tools",
@@ -8587,14 +8472,6 @@ $sync.configs.applications = @'
     "link": "https://nilesoft.org/",
     "winget": "Nilesoft.Shell"
   },
-  "WPFInstallsidequest": {
-    "category": "Games",
-    "choco": "sidequest",
-    "content": "SideQuestVR",
-    "description": "SideQuestVR is a community-driven platform that enables users to discover, install, and manage virtual reality content on Oculus Quest devices.",
-    "link": "https://sidequestvr.com/",
-    "winget": "SideQuestVR.SideQuest"
-  },
   "WPFInstallsignal": {
     "category": "Communications",
     "choco": "signal",
@@ -8659,6 +8536,14 @@ $sync.configs.applications = @'
     "link": "http://www.uderzo.it/main_products/space_sniffer/",
     "winget": "UderzoSoftware.SpaceSniffer"
   },
+  "WPFInstallspotube": {
+    "category": "Multimedia Tools",
+    "choco": "spotube",
+    "content": "Spotube",
+    "description": "Open source Spotify client that doesn't require Premium nor uses Electron! Available for both desktop & mobile! ",
+    "link": "https://github.com/KRTirtho/spotube",
+    "winget": "KRTirtho.Spotube"
+  },
   "WPFInstallstarship": {
     "category": "Development",
     "choco": "starship",
@@ -8666,14 +8551,6 @@ $sync.configs.applications = @'
     "description": "Starship is a minimal, fast, and customizable prompt for any shell.",
     "link": "https://starship.rs/",
     "winget": "starship"
-  },
-  "WPFInstallsteam": {
-    "category": "Games",
-    "choco": "steam-client",
-    "content": "Steam",
-    "description": "Steam is a digital distribution platform for purchasing and playing video games, offering multiplayer gaming, video streaming, and more.",
-    "link": "https://store.steampowered.com/about/",
-    "winget": "Valve.Steam"
   },
   "WPFInstallstremio": {
     "winget": "Stremio.Stremio",
@@ -8715,14 +8592,6 @@ $sync.configs.applications = @'
     "link": "https://www.pdfgear.com/",
     "winget": "PDFgear.PDFgear"
   },
-  "WPFInstallsunshine": {
-    "category": "Games",
-    "choco": "sunshine",
-    "content": "Sunshine/GameStream Server",
-    "description": "Sunshine is a GameStream server that allows you to remotely play PC games on Android devices, offering low-latency streaming.",
-    "link": "https://github.com/LizardByte/Sunshine",
-    "winget": "LizardByte.Sunshine"
-  },
   "WPFInstallsuperf4": {
     "category": "Utilities",
     "choco": "superf4",
@@ -8762,14 +8631,6 @@ $sync.configs.applications = @'
     "description": "Tabby is a highly configurable terminal emulator, SSH and serial client for Windows, macOS and Linux",
     "link": "https://tabby.sh/",
     "winget": "Eugeny.Tabby"
-  },
-  "WPFInstallTcNoAccSwitcher": {
-    "category": "Games",
-    "choco": "tcno-acc-switcher",
-    "content": "TCNO Account Switcher",
-    "description": "A Super-fast account switcher for Steam, Battle.net, Epic Games, Origin, Riot, Ubisoft and many others!",
-    "link": "https://github.com/TCNOco/TcNo-Acc-Switcher",
-    "winget": "TechNobo.TcNoAccountSwitcher"
   },
   "WPFInstalltcpview": {
     "category": "Microsoft Tools",
@@ -8859,14 +8720,6 @@ $sync.configs.applications = @'
     "link": "https://www.betterbird.eu/",
     "winget": "Betterbird.Betterbird"
   },
-  "WPFInstalltidal": {
-    "category": "Multimedia Tools",
-    "choco": "na",
-    "content": "Tidal",
-    "description": "Tidal is a music streaming service known for its high-fidelity audio quality and exclusive content. It offers a vast library of songs and curated playlists.",
-    "link": "https://tidal.com/",
-    "winget": "9NNCB5BS59PH"
-  },
   "WPFInstalltotalcommander": {
     "category": "Utilities",
     "choco": "TotalCommander",
@@ -8899,14 +8752,6 @@ $sync.configs.applications = @'
     "link": "https://twinkletray.com/",
     "winget": "xanderfrangos.twinkletray"
   },
-  "WPFInstallubisoft": {
-    "category": "Games",
-    "choco": "ubisoft-connect",
-    "content": "Ubisoft Connect",
-    "description": "Ubisoft Connect is Ubisoft's digital distribution and online gaming service, providing access to Ubisoft's games and services.",
-    "link": "https://ubisoftconnect.com/",
-    "winget": "Ubisoft.Connect"
-  },
   "WPFInstallungoogled": {
     "category": "Browsers",
     "choco": "ungoogled-chromium",
@@ -8914,14 +8759,6 @@ $sync.configs.applications = @'
     "description": "Ungoogled Chromium is a version of Chromium without Google's integration for enhanced privacy and control.",
     "link": "https://github.com/Eloston/ungoogled-chromium",
     "winget": "eloston.ungoogled-chromium"
-  },
-  "WPFInstallunity": {
-    "category": "Development",
-    "choco": "unityhub",
-    "content": "Unity Game Engine",
-    "description": "Unity is a powerful game development platform for creating 2D, 3D, augmented reality, and virtual reality games.",
-    "link": "https://unity.com/",
-    "winget": "Unity.UnityHub"
   },
   "WPFInstallvagrant": {
     "category": "Development",
@@ -9018,14 +8855,6 @@ $sync.configs.applications = @'
     "description": "Voicemeeter Potato is the ultimate version of the Voicemeeter Audio Mixer Application endowed with Virtual Audio Device to mix and manage any audio sources from or to any audio devices or applications.",
     "link": "https://voicemeeter.com/",
     "winget": "VB-Audio.Voicemeeter.Potato"
-  },
-  "WPFInstallvrdesktopstreamer": {
-    "category": "Games",
-    "choco": "na",
-    "content": "Virtual Desktop Streamer",
-    "description": "Virtual Desktop Streamer is a tool that allows you to stream your desktop screen to VR devices.",
-    "link": "https://www.vrdesktop.net/",
-    "winget": "VirtualDesktop.Streamer"
   },
   "WPFInstallvscode": {
     "category": "Development",
@@ -9178,14 +9007,6 @@ $sync.configs.applications = @'
     "description": "HxD is a free hex editor that allows you to edit, view, search, and analyze binary files.",
     "link": "https://mh-nexus.de/en/hxd/",
     "winget": "MHNexus.HxD"
-  },
-  "WPFInstallxemu": {
-    "category": "Games",
-    "choco": "na",
-    "content": "XEMU",
-    "description": "XEMU is an open-source Xbox emulator that allows you to play Xbox games on your PC, aiming for accuracy and compatibility.",
-    "link": "https://xemu.app/",
-    "winget": "xemu-project.xemu"
   },
   "WPFInstallxnview": {
     "category": "Utilities",
@@ -9450,14 +9271,6 @@ $sync.configs.applications = @'
     "description": "The customization marketplace for Windows programs",
     "link": "https://windhawk.net",
     "winget": "RamenSoftware.Windhawk"
-  },
-  "WPFInstallForceAutoHDR": {
-    "category": "Utilities",
-    "choco": "na",
-    "content": "ForceAutoHDR",
-    "description": "ForceAutoHDR simplifies the process of adding games to the AutoHDR list in the Windows Registry",
-    "link": "https://github.com/7gxycn08/ForceAutoHDR",
-    "winget": "ForceAutoHDR.7gxycn08"
   },
   "WPFInstallJoyToKey": {
     "category": "Utilities",
@@ -12359,6 +12172,7 @@ $sync.configs.tweaks = @'
       "*Hulu*",
       "*HiddenCity*",
       "*AdobePhotoshopExpress*",
+      "*HotspotShieldFreeVPN*",
       "*Microsoft.Advertising.Xaml*"
     ],
     "InvokeScript": [
@@ -12484,6 +12298,29 @@ $sync.configs.tweaks = @'
       "\r\n      Write-Host \"Install Copilot\"\r\n      dism /online /add-package /package-name:Microsoft.Windows.Copilot\r\n      "
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveCopilot"
+  },
+  "WPFTweaksRecallOff": {
+    "Content": "Disable Recall",
+    "Description": "Turn Recall off",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a011_",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI",
+        "Name": "DisableAIDataAnalysis",
+        "Type": "DWord",
+        "Value": "1",
+        "OriginalValue": "0"
+      }
+    ],
+    "InvokeScript": [
+      "\r\n      Write-Host \"Disable Recall\"\r\n      DISM /Online /Disable-Feature /FeatureName:Recall\r\n      "
+    ],
+    "UndoScript": [
+      "\r\n      Write-Host \"Enable Recall\"\r\n      DISM /Online /Enable-Feature /FeatureName:Recall\r\n      "
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/DisableRecall"
   },
   "WPFTweaksDisableLMS1": {
     "Content": "Disable Intel MM (vPro LMS)",
@@ -14871,8 +14708,8 @@ Stop-Transcript
 # SIG # Begin signature block
 # MIIQRwYJKoZIhvcNAQcCoIIQODCCEDQCAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCBbsciyTkP1jeDb
-# l32Toc52fp0iLalgr8qEsHOc7ith86CCDIMwggYaMIIEAqADAgECAhBiHW0MUgGe
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCBKi50spAggYDLN
+# GAvneEzqhbRsC8mBktQzjbzaO4/KhKCCDIMwggYaMIIEAqADAgECAhBiHW0MUgGe
 # O5B5FSCJIRwKMA0GCSqGSIb3DQEBDAUAMFYxCzAJBgNVBAYTAkdCMRgwFgYDVQQK
 # Ew9TZWN0aWdvIExpbWl0ZWQxLTArBgNVBAMTJFNlY3RpZ28gUHVibGljIENvZGUg
 # U2lnbmluZyBSb290IFI0NjAeFw0yMTAzMjIwMDAwMDBaFw0zNjAzMjEyMzU5NTla
@@ -14944,16 +14781,16 @@ Stop-Transcript
 # ZSBTaWduaW5nIENBIFIzNgIQJs052f8oQtNfSG2ygwabxTANBglghkgBZQMEAgEF
 # AKCBhDAYBgorBgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgor
 # BgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMC8GCSqGSIb3
-# DQEJBDEiBCCxATBvymZAwN7TgWwV6QTOBveUpYrxHCMQtZC8GqOtTTANBgkqhkiG
-# 9w0BAQEFAASCAgAUtZpV3p4fBW2nYwC8JdaNURv9aekNyenqt+ff2B58j7m4KDcF
-# VdSqzvUhu9eK4bvjz3eRg+AwX8nLrS5RgFNQj4i6ccEUjxne3fPW4LCm771V7Exl
-# pSP3dy1UCBWAgcEnl0eA96Remog+vAKPZO5y2FJHOB5MNcKHQvbqUFYwJ9PAFirc
-# DH+sUv/WSvgNR4eKrY06SFajbAzQPqM9e5PNZutsTfhsHR38q8IxnUVZ/St0UrVH
-# 1d5L9WMDm4kQVmKs71WRkQii/lWY7XASuQR5sCpQyCwzDOXZBwUuDQ/vuti7SM4+
-# 7kBJ5OWz5d3mHZCrmYG84RuLKY8jeHLV/eVF3RjzoR1Pk72PBtszwbWP0Ll8d2K4
-# qsLQYwff5WIffzX8pSISaa3LPPdFs4GjH7ZxvR6MMGqdtOXZdAiHtPJC0poixzKG
-# gOlIphtgMbRbi0wLA1nvAq+Wvc7qfYfJUAwBgH5FZRK+Tc+fCiGIvezSOLwcb7fT
-# D/jlllQPXh1ddIig56nMQrvNJZhMlHa/OVTvXUrxiOPTFuUjN2R0hOAWrdNcPndS
-# jELHXh7J8lQ2Feode/xKCDJjOQUTDZhWPDijqFtzLOoAf34zJDCf4SYNc9FhhQlC
-# sGN3nt8HFCfVFsYORfDrpRe5erEDR2z+Oi9sSPV0Jv9Ydkjheq1+2/KLXg==
+# DQEJBDEiBCCpjmUQ52kKk0g7s3iqiBxOiJASce+dcXz8/qbVXZ9NnDANBgkqhkiG
+# 9w0BAQEFAASCAgANlIm2R2T2Zv4HC0+497MBqRQh5fB4sBhKUXYS2aucHbqvX+YM
+# wUpLWwn+dyqWT1gRWH2fq+dCv/xZOIcf1IG0wjjruceHmUKmcjMorxSkpErWnJs3
+# KSambCP9uMJJWkL7qWB2iMD0IoTkEYJaclqNXG6oUVAaYBJBe/aClTiTl2C+7dCe
+# kXeTTwIZDb5aTN2UepR5KF85YI5PMGSsCLDwbthWmx+2uar3f+apcdb4FVj6vGz9
+# +0ttUkJY861tZXSZt5njQi98KiLukiFKkGAMQEUW6PZQ4ZGevwkzAKzzNHqeUB2A
+# Ily5jkVxpa2wX8Q/7wRvl5gWaI84k6GruWRKix1zWDxYzmVAzDVlZg0pInCi2/GP
+# QxL+pyMa1nla+Mj3yIDbafgKsjLF6OPGUI1OSIo+m5ctas7+VD65C1/Y8qC2TDaG
+# xprAhR8DTiOcz4czhaWVdWh+rr2Qu5WajD4yg3ATdluK3kPamGTybtQYUwo6BDqA
+# mDpf/u0jRaprz6/ffk8HJyjMECDAfsPliV5XPn/2OuXG2f05D3gLNegSH+0O+FN/
+# rcAdZmz469Cl3eCAWn90TmVvORX0njH18SHWHCs2GAegAcIDqmp4En9meUw5NUPM
+# JA1X94EisedF56jdDnO2dKFHeAKiAKCfWMmEjl9rGG3aY1Qiv+zlX6F2EQ==
 # SIG # End signature block
