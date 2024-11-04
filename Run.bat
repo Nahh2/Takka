@@ -60,7 +60,7 @@ goto main_menu
 cls
 echo Running Windows 11/10 Debloat Script...
 timeout /t 1 >nul
-powershell -ExecutionPolicy Bypass -File "%~dp0\Win11Debloat-master\Run.bat"
+powershell -ExecutionPolicy Bypass -File "%~dp0\Win11Debloat-master\Win11Debloat.ps1"
 :: Check for admin rights
 openfiles >nul 2>&1
 if '%errorlevel%'=='0' (
