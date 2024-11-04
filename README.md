@@ -4,7 +4,7 @@
 
 This project provides a command-line batch script `Run.bat` that offers a range of Windows system utilities, including Windows debloating, KMS activation, and additional PowerShell utilities. The menu-driven interface is designed to help users perform these tasks from a single, centralized script..<br/><br/>
 
-> **Language: <a href="README_AR.md">عربي</a**
+> **Language: <a href="README_AR.md">عربي**
 
 </div>
 
