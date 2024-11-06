@@ -12,6 +12,7 @@ This project provides a command-line batch script `Run.bat` that offers a range 
 
 Requirements:
 
+- WinGet - to Run [Chris Titus PowerShell Utilities](https://github.com/Nahh2/Takka/releases)
 - Windows OS - Designed for Windows 10/11.
 - PowerShell - Required for running certain commands within the script.
 - 7-Zip - Necessary for the WinRAR Password Cracker functionality (located at C:\Program Files\7-Zip).

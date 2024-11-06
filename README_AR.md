@@ -12,6 +12,7 @@
 
 متطلبات::
 
+- WinGet - تحتاج لتشغيل [أدوات PowerShell من Chris Titus](https://github.com/Nahh2/Takka/releases)
 - نظام التشغيل Windows مصمم لنظامي التشغيل Windows 10/11.
 - PowerShell - مطلوب لتشغيل أوامر معينة داخل البرنامج النصي.
 - 7-Zip - ضروري لوظيفة WinRAR Password Cracker (الموجود في C:\Program Files\7-Zip).

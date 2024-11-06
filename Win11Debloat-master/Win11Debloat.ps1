@@ -447,7 +447,7 @@ function Strip-Progress {
     )
 
     # Regex pattern to match spinner characters and progress bar patterns
-    $progressPattern = 'Γû[Æê]|^\s+[-\\|/]\s+$'
+    $progressPattern = 'Î“Ã»[Ã†Ãª]|^\s+[-\\|/]\s+$'
 
     # Corrected regex pattern for size formatting, ensuring proper capture groups are utilized
     $sizePattern = '(\d+(\.\d{1,2})?)\s+(B|KB|MB|GB|TB|PB) /\s+(\d+(\.\d{1,2})?)\s+(B|KB|MB|GB|TB|PB)'
@@ -758,7 +758,7 @@ if ((-not $global:Params.Count) -or $RunDefaults -or $RunWin11Defaults -or ($SPP
     else {
         # Show menu and wait for user input, loops until valid input is provided
         Do { 
-            $ModeSelectionMessage = "Please select an option (1/2/3/0)" 
+            $ModeSelectionMessage = "Please select an option (1/2/3/0/E)" 
 
             PrintHeader 'Menu'
 
@@ -770,11 +770,12 @@ if ((-not $global:Params.Count) -or $RunDefaults -or $RunWin11Defaults -or ($SPP
             if (Test-Path "$PSScriptRoot/SavedSettings") {
                 Write-Output "(4) Apply saved custom settings from last time"
                 
-                $ModeSelectionMessage = "Please select an option (1/2/3/4/0)" 
+                $ModeSelectionMessage = "Please select an option (1/2/3/4/0/E)" 
             }
 
             Write-Output ""
             Write-Output "(0) Show more information"
+            Write-Output "(E) to Exit"
             Write-Output ""
             Write-Output ""
 
@@ -793,11 +794,19 @@ if ((-not $global:Params.Count) -or $RunDefaults -or $RunWin11Defaults -or ($SPP
                 $Mode = $null
             }
         }
-        while ($Mode -ne '1' -and $Mode -ne '2' -and $Mode -ne '3' -and $Mode -ne '4') 
+        while ($Mode -ne '1' -and $Mode -ne '2' -and $Mode -ne '3' -and $Mode -ne '4' -and $Mode -ne 'E') 
     }
 
     # Add execution parameters based on the mode
     switch ($Mode) {
+    #to Win11Debloat Script
+    'E'{
+        
+
+        Exit
+
+
+    }
         # Default mode, loads defaults after confirmation
         '1' { 
             # Print the default settings & require userconfirmation, unless Silent parameter was passed

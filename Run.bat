@@ -6,21 +6,25 @@ if %errorLevel% NEQ 0 (
     powershell -Command "Start-Process cmd -Argument '/c %~s0' -Verb RunAs"
     exit /b
 )
+set "Line================================================================================"
+
 
 @echo off
 title Takka
+mode con: cols=100 lines=25
 color 7
 
 :main_menu
 cls
-echo ===============================================================================
+mode con: cols=100 lines=25
+echo %Line%
 echo                              Main Menu - CMD Interface
-echo ===============================================================================
+echo %Line%
 echo 1: Debloat Windows 11/10       5: MAS Script
 echo 2: KMS Activation              6: Chris Titus PowerShell Utilities
 echo 3: SMB Bruteforce Attack       7: [31mExit[0m
 echo 4: WinRAR Password Cracker
-echo ===============================================================================
+echo %Line%
 set "choice="
 set /p choice="[Enter your choice]~: "
 
