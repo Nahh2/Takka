@@ -35,6 +35,8 @@ To download the latest stable release, please visit the [Releases](https://githu
 
 6. Chris Titus PowerShell Utilities - Launches Chris Titus Tech PowerShell utilities for Windows optimization and customization.
 
+7. IAS - Activates IDM(Internet Download Manager) product
+
 > [!Note]  
 > Some features require administrative privileges and specific tools (e.g., 7-Zip for the WinRAR Password Cracker).
 

@@ -22,8 +22,8 @@ echo                              Main Menu - CMD Interface
 echo %Line%
 echo 1: Debloat Windows 11/10       5: MAS Script
 echo 2: KMS Activation              6: Chris Titus PowerShell Utilities
-echo 3: SMB Bruteforce Attack       7: [31mExit[0m
-echo 4: WinRAR Password Cracker
+echo 3: SMB Bruteforce Attack       7: IDM Activation
+echo 4: WinRAR Password Cracker     8: [31mExit[0m
 echo %Line%
 set "choice="
 set /p choice="[Enter your choice]~: "
@@ -53,7 +53,8 @@ if "%choice%"=="3" goto smb_bruteforce
 if "%choice%"=="4" goto winrar_cracker
 if "%choice%"=="5" goto mas_script
 if "%choice%"=="6" goto chris_titus
-if "%choice%"=="7" goto exit
+if "%choice%"=="7" goto IDM Activation
+if "%choice%"=="8" goto exit
 
 :: Error Handling for unknown input
 echo [31mInvalid input, please try again.[0m
@@ -6706,8 +6707,7 @@ goto main_menu
 cls
 echo Running MAS Script...
 powershell -Command "irm https://get.activated.win | iex"
-pause
-goto main_menu
+
 
 :chris_titus
 cls
@@ -6722,6 +6722,13 @@ if '%errorlevel%'=='0' (
     echo Requesting administrative privileges...
     powershell -Command "Start-Process cmd -ArgumentList '/c %~s0' -Verb RunAs"
 )
+
+:IDM Activation
+cls
+echo Running IDM Activation...
+Start ""  "%~dp0\IAS.cmd"
+pause
+goto main_menu
 
 :exit
 cls
