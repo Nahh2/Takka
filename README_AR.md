@@ -37,6 +37,8 @@
 
 7. IAS - (Internet Download Manager)IDM تفعيل منتج
 
+8. CleanUP - احذف المجلد المؤقت واجعل حاسوبك أفضل
+
 > [!ملاحظة]  
 > تتطلب بعض الميزات امتيازات إدارية وأدوات محددة (على سبيل المثال، 7-Zip لـ WinRAR Password Cracker).
 

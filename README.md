@@ -37,6 +37,8 @@ To download the latest stable release, please visit the [Releases](https://githu
 
 7. IAS - Activates IDM(Internet Download Manager) product
 
+8. CleanUP - Delete in the Temp Folder and make your pc Better 
+
 > [!Note]  
 > Some features require administrative privileges and specific tools (e.g., 7-Zip for the WinRAR Password Cracker).
 

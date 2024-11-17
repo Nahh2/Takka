@@ -23,10 +23,10 @@ echo %Line%
 echo 1: Debloat Windows 11/10       5: MAS Script
 echo 2: KMS Activation              6: Chris Titus PowerShell Utilities
 echo 3: SMB Bruteforce Attack       7: IDM Activation
-echo 4: WinRAR Password Cracker     8: [31mExit[0m
+echo 4: WinRAR Password Cracker     8: CleanUP
 echo %Line%
 set "choice="
-set /p choice="[Enter your choice]~: "
+set /p choice="[0 to Exit |Enter your choice]~: "
 
 :: Validate input
 if "%choice%"=="" (
@@ -54,7 +54,8 @@ if "%choice%"=="4" goto winrar_cracker
 if "%choice%"=="5" goto mas_script
 if "%choice%"=="6" goto chris_titus
 if "%choice%"=="7" goto IDM Activation
-if "%choice%"=="8" goto exit
+if "%choice%"=="8" goto CleanUP
+if "%choice%"=="0" goto exit
 
 :: Error Handling for unknown input
 echo [31mInvalid input, please try again.[0m
@@ -6727,6 +6728,13 @@ if '%errorlevel%'=='0' (
 cls
 echo Running IDM Activation...
 Start ""  "%~dp0\IAS.cmd"
+pause
+goto main_menu
+
+:CleanUP
+cls
+echo Running CleanUP...
+Start ""  "%~dp0\CleanUP.bat"
 pause
 goto main_menu
 
