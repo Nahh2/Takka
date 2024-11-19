@@ -1,11 +1,32 @@
 @echo off
-:: Check if the script is running with elevated privileges butts
+
+:: Enable admin privileges check
+>nul 2>&1 "%SYSTEMROOT%\system32\cacls.exe" "%SYSTEMROOT%\system32\config\system"
+if '%errorlevel%' NEQ '0' (
+    echo Requesting administrative privileges...
+    goto UACPrompt
+) else ( goto gotAdmin )
+
+:UACPrompt
+    echo Set UAC = CreateObject^("Shell.Application"^) > "%temp%\getadmin.vbs"
+    echo UAC.ShellExecute "%~s0", "", "", "runas", 1 >> "%temp%\getadmin.vbs"
+    "%temp%\getadmin.vbs"
+    exit /B
+
+:gotAdmin
+    if exist "%temp%\getadmin.vbs" ( del "%temp%\getadmin.vbs" )
+    pushd "%CD%"
+    CD /D "%~dp0"
+setlocal enabledelayedexpansion
+
+:: Check if the script is running with elevated privileges
 net session >nul 2>&1
 if %errorLevel% NEQ 0 (
     echo Requesting administrative privileges...
     powershell -Command "Start-Process cmd -Argument '/c %~s0' -Verb RunAs"
     exit /b
 )
+
 set "Line================================================================================"
 
 
