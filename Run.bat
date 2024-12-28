@@ -51,18 +51,18 @@ set /p choice="[0 to Exit |Enter your choice]~: "
 
 :: Validate input
 if "%choice%"=="" (
-    echo Invalid input! Please select a number between 1 and 7.
+    echo Invalid input! Please select a number between 1 and 8.
     pause
     goto main_menu
 )
 
 :: Check if the input is a valid number
 if "%choice%" lss "1" (
-    echo Invalid input! Please select a number between 1 and 7.
+    echo Invalid input! Please select a number between 1 and 8.
     pause
     goto main_menu
-) else if "%choice%" gtr "7" (
-    echo Invalid input! Please select a number between 1 and 7.
+) else if "%choice%" gtr "8" (
+    echo Invalid input! Please select a number between 1 and 8.
     pause
     goto main_menu
 )
