@@ -1,7 +1,7 @@
 # تثبيت WinGet يدوياً من متجر Microsoft
 <div align="center">
   
-**Language: <a href="WinGet_install_Manual_AR.md">عربي</a>**
+**Language: <a href="WinGet_install_Manual.md">English</a>**
 
 </div>
 
