@@ -27,19 +27,46 @@ if %errorLevel% NEQ 0 (
     exit /b
 )
 
+:: Colors
 set "Line================================================================================"
 
+set "_NCS=1"
+
+if %_NCS% EQU 1 (
+  for /F %%a in ('echo prompt $E ^| cmd') do set "esc=%%a"
+  set     "Red="41;97m""
+  set     "_Red="31m""
+  set    "Gray="100;97m""
+  set   "Green="42;97m""
+  set    "Blue="44;97m""
+  set  "_White="40;37m""
+  set  "_Green="40;92m""
+  set "_Yellow="40;93m""
+) else (
+  set     "Red="Red" "white""
+  set    "Gray="Darkgray" "white""
+  set   "Green="DarkGreen" "white""
+  set    "Blue="Blue" "white""
+  set  "_White="Black" "Gray""
+  set  "_Green="Black" "Green""
+  set "_Yellow="Black" "Yellow""
+)
+
+:: Check for updates first
+mode con: cols=80 lines=35
+
+:: Check for updates
+call :check_update
 
 @echo off
 title Takka
-mode con: cols=100 lines=25
 color 7
 
 :main_menu
 cls
-mode con: cols=100 lines=25
+mode con: cols=80 lines=35
 echo %Line%
-echo                              Main Menu - CMD Interface
+echo                              Main Menu - CMD Interface                
 echo %Line%
 echo 1: Debloat Windows 11/10       5: MAS Script
 echo 2: KMS Activation              6: Chris Titus PowerShell Utilities
@@ -6763,3 +6790,70 @@ goto main_menu
 cls
 echo Exiting the script. Goodbye!
 exit
+
+:: Add this function near the top of the file, after the initial checks
+:check_update   
+set "current_version=4.5"
+set "update_status="
+set "temp_version_file=%temp%\winutil_version.txt"
+
+:: Download version file from GitHub
+powershell -Command "& {try { (New-Object System.Net.WebClient).DownloadFile('https://raw.githubusercontent.com/Nahh2/Takka/main/version.txt', '%temp_version_file%') } catch { exit 1 }}" >nul 2>&1
+
+if exist "%temp_version_file%" (
+    :: Read file and store value
+    echo %Line%
+    echo                                Update Check
+    echo %Line%
+    for /f "tokens=1" %%i in ('type "%temp_version_file%"') do (
+        if "%%i" gtr "%current_version%" (
+            call :_color2 %_White% "Update Status: " %_Green% "[New Update Available]"
+            echo.
+            call :_color2 %_White% "Current Version: " %_Yellow% "v%current_version%"
+            call :_color2 %_White% "New Version: " %_Green% "v%%i"
+            echo.
+            choice /c NY /n /m ">Do you want to download the new update? (N for No, Y for Yes)"
+            if errorlevel 2 (
+                call :download_update
+            )
+        ) else (
+            set "update_status=[Up to Date v%current_version%]"
+        )
+    )
+    del "%temp_version_file%" >nul 2>&1
+) else (
+    set "update_status=[Update Check Failed]"
+)
+exit /b
+
+:download_update
+call :_color2 %_White% "Downloading " %_Green% "Update..."
+powershell -Command "& {try { (New-Object System.Net.WebClient).DownloadFile('https://github.com/Nahh2/releases/latest/download/winutil.zip', '%temp%\winutil_update.zip') } catch { exit 1 }}" >nul 2>&1
+
+if exist "%temp%\winutil_update.zip" (
+    :: Extract updated files
+    powershell -Command "Expand-Archive -Path '%temp%\winutil_update.zip' -DestinationPath '%~dp0' -Force" >nul 2>&1
+    del "%temp%\winutil_update.zip" >nul 2>&1
+    
+    call :_color2 %_White% "Update " %_Green% "Successfully Installed!"
+    timeout /t 2 >nul
+    
+    :: Restart script
+    call :_color2 %_White% "Restarting " %_Green% "Application..."
+    timeout /t 2 >nul
+    start "" "%~f0"
+    exit
+) else (
+    call :_color2 %_Red% "Failed " %_White% "to download update"
+    timeout /t 2 >nul
+)
+exit /b
+
+:_color2
+
+if %_NCS% EQU 1 (
+echo %esc%[%~1%~2%esc%[%~3%~4%esc%[0m
+) else (
+%psc% write-host -back '%1' -fore '%2' '%3' -NoNewline; write-host -back '%4' -fore '%5' '%6'
+)
+exit /b
