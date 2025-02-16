@@ -6793,7 +6793,7 @@ exit
 
 :: Add this function near the top of the file, after the initial checks
 :check_update   
-set "current_version=4.6"
+set "current_version=4.7"
 set "update_status="
 set "temp_version_file=%temp%\winutil_version.txt"
 
